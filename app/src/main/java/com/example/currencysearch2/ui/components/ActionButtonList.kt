@@ -36,10 +36,11 @@ fun ActionButton(buttonInfo: ActionButtonInfo, modifier: Modifier = Modifier) {
                 contentDescription = buttonInfo.text,
                 modifier = modifier
                     .background(
-                        color = MaterialTheme.colorScheme.primaryContainer,
+                        color = MaterialTheme.colorScheme.primary,
                         shape = RoundedCornerShape(100)
                     )
-                    .padding(10.dp)
+                    .padding(10.dp),
+                tint = MaterialTheme.colorScheme.onPrimary,
             )
         }
         Text(text = buttonInfo.text, style = MaterialTheme.typography.labelSmall)

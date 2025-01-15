@@ -26,8 +26,8 @@ class SearchViewModel: ViewModel() {
 
     private val _currencies = MutableStateFlow<List<CurrencyInfo>>(emptyList())
     val currencies =
-        combine(_searchText, _currencyTypes, _currencies) { searchText, displayMode, currencies ->
-            currencies.filterByAcceptedTypes(displayMode)
+        combine(_searchText, _currencyTypes, _currencies) { searchText, currencyTypes, currencies ->
+            currencies.filterByAcceptedTypes(currencyTypes)
                 .filterBySearch(searchText)
         }.stateIn(
             viewModelScope,

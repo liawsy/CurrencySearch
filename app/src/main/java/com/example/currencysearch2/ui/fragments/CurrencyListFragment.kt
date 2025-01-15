@@ -28,21 +28,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,9 +44,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.compose.content
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.currencysearch2.domain.SearchViewModel
 import com.example.currencysearch2.domain.model.CurrencyInfo
 import com.example.currencysearch2.domain.model.CurrencyType
@@ -61,7 +53,7 @@ import com.example.currencysearch2.ui.components.ItemRow
 
 class CurrencyListFragment : Fragment() {
 
-    private val searchViewModel: SearchViewModel by viewModels()
+    private val searchViewModel: SearchViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -106,15 +98,14 @@ class CurrencyListFragment : Fragment() {
 
     @Composable
     fun SearchBar(modifier: Modifier = Modifier) {
-        val viewModel = viewModel<SearchViewModel>()
-        val searchText by viewModel.searchText.collectAsState()
-        val isSearching by viewModel.isSearching.collectAsState()
+        val searchText by searchViewModel.searchText.collectAsState()
+        val isSearching by searchViewModel.isSearching.collectAsState()
         val keyboardController = LocalSoftwareKeyboardController.current
 
         TextField(
             leadingIcon = {
                 if (isSearching) {
-                    IconButton(onClick = { viewModel.cancelSearch() }) {
+                    IconButton(onClick = { searchViewModel.cancelSearch() }) {
                         androidx.compose.material3.Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Return to original content",
@@ -129,7 +120,7 @@ class CurrencyListFragment : Fragment() {
             },
             trailingIcon = {
                 if (isSearching) {
-                    IconButton(onClick = { viewModel.cancelSearch() }) {
+                    IconButton(onClick = { searchViewModel.cancelSearch() }) {
                         androidx.compose.material3.Icon(
                             imageVector = Icons.Filled.Cancel,
                             contentDescription = "Cancel search",
@@ -138,7 +129,7 @@ class CurrencyListFragment : Fragment() {
                 }
             },
             value = searchText,
-            onValueChange = viewModel::onSearchTextChanged,
+            onValueChange = searchViewModel::onSearchTextChanged,
             placeholder = { Text("Search") },
             shape = RoundedCornerShape(100),
             colors = TextFieldDefaults.colors(
