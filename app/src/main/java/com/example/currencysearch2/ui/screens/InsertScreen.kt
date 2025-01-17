@@ -1,15 +1,13 @@
 package com.example.currencysearch2.ui.screens
 
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,24 +20,39 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.currencysearch2.domain.InsertViewModel
+import org.koin.androidx.compose.koinViewModel
 
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun InsertScreen(navController: NavController) {
-    val insertViewModel = viewModel<InsertViewModel>()
+    val insertViewModel = koinViewModel<InsertViewModel>()
     val insertedText by insertViewModel.insertedText.collectAsState()
-    val imeIsVisible = WindowInsets.isImeVisible
+    val currentContext = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        insertViewModel.toastEvent.collect {
+            Toast.makeText(currentContext, it.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        insertViewModel.insertCompleteEvent.collect {
+            navController.popBackStack()
+        }
+    }
+
     SharedTransitionLayout {
         Column(
             verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -84,7 +97,7 @@ fun InsertScreen(navController: NavController) {
                     .skipToLookaheadSize()
             )
 
-            TextButton("Insert", onClick = {}, modifier = Modifier.align(Alignment.CenterHorizontally))
+            TextButton("Insert", onClick = { insertViewModel.verifyInputCurrencies() }, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
 
@@ -92,13 +105,14 @@ fun InsertScreen(navController: NavController) {
 
 @Composable
 fun InsertOptions(modifier: Modifier) {
-    val insertViewModel = viewModel<InsertViewModel>()
+    val insertViewModel = koinViewModel<InsertViewModel>()
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         listOf(
-            TextButtonConfig("List A", onClick = {}),
-            TextButtonConfig("List B", onClick = {}),
-            TextButtonConfig("List A & B", onClick = {}),
-            TextButtonConfig("Beautify", onClick = { insertViewModel.beautifyString() })
+            TextButtonConfig("List A", onClick = { insertViewModel.loadJsonStringFromFile("currencyListA.json") }),
+            TextButtonConfig("List B", onClick = { insertViewModel.loadJsonStringFromFile("currencyListB.json") }),
+            TextButtonConfig("List A & B", onClick = { insertViewModel.loadJsonStringFromFile("combinedCurrencyList.json") }),
+            TextButtonConfig("Beautify", onClick = { insertViewModel.beautifyString() }),
+            TextButtonConfig("Clear", onClick = { insertViewModel.clearInput() }),
         ).map {
             TextButton(it.title, it.onClick, modifier = Modifier.weight(1f))
         }

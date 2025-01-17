@@ -1,5 +1,8 @@
 package com.example.currencysearch2.domain.model
 
+import com.example.currencysearch2.dao.Currency
+import com.example.currencysearch2.dao.CurrencyType
+
 sealed class CurrencyInfo(
     open val id: String,
     open val name: String,
@@ -26,4 +29,22 @@ sealed class CurrencyInfo(
         return name.split(" ").any { it.lowercase().startsWith(lowerCaseQuery) } ||
                 symbol.lowercase().startsWith(lowerCaseQuery)
     }
+
+    fun toCurrency(): Currency {
+        return when (this) {
+            is CryptoInfo -> Currency(
+                id = id,
+                name = name,
+                symbol = symbol,
+                type = CurrencyType.CRYPTO,
+            )
+            is FiatInfo -> Currency(
+                id = id,
+                name = name,
+                symbol = symbol,
+                type = CurrencyType.FIAT
+            )
+        }
+    }
+
 }
