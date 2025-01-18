@@ -1,5 +1,6 @@
 package com.example.currencysearch2.ui.screens
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,10 +17,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.compose.AndroidFragment
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.currencysearch2.domain.DemoViewModel
 import com.example.currencysearch2.domain.events.ButtonEvent
@@ -29,18 +30,19 @@ import com.example.currencysearch2.ui.components.ActionButtonInfo
 import com.example.currencysearch2.ui.components.ActionButtonList
 import com.example.currencysearch2.ui.fragments.CurrencyListFragment
 import com.example.currencysearch2.utils.collectOnLifecycleStarted
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun DemoCurrenciesScreen(navController: NavController) {
-    val viewModel = viewModel<DemoViewModel>()
+    val viewModel = koinViewModel<DemoViewModel>(
+        viewModelStoreOwner = LocalContext.current as ComponentActivity
+    )
     Column(
         verticalArrangement = Arrangement.spacedBy(25.dp),
     ) {
         ActionMenu(navController)
         AndroidFragment<CurrencyListFragment>(modifier = Modifier.padding(bottom = 10.dp)) { fragment ->
-            // TODO: Restore last display mode and pass to fragment
             viewModel.buttonEvent.collectOnLifecycleStarted(fragment) { buttonEvent ->
-                println("SYDEBUG: Fragment instance=${fragment.hashCode()}")
                 when (buttonEvent) {
                     ButtonEvent.ClearCurrencies -> fragment.updateCurrencies(
                         emptyList()
@@ -70,7 +72,9 @@ fun DemoCurrenciesScreen(navController: NavController) {
 
 @Composable
 fun ActionMenu(navController: NavController, modifier: Modifier = Modifier) {
-    val viewModel = viewModel<DemoViewModel>()
+    val viewModel = koinViewModel<DemoViewModel>(
+        viewModelStoreOwner = LocalContext.current as ComponentActivity
+    )
     Column(modifier = modifier.animateContentSize()) {
         Text(
             text = "Actions",

@@ -1,6 +1,7 @@
 package com.example.currencysearch2.ui.screens
 
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Arrangement
@@ -30,14 +31,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.currencysearch2.domain.InsertViewModel
+import com.example.currencysearch2.data.CurrencySample
+import com.example.currencysearch2.domain.DemoViewModel
 import org.koin.androidx.compose.koinViewModel
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun InsertScreen(navController: NavController) {
-    val insertViewModel = koinViewModel<InsertViewModel>()
+    val insertViewModel = koinViewModel<DemoViewModel>(
+        viewModelStoreOwner = LocalContext.current as ComponentActivity
+    )
     val insertedText by insertViewModel.insertedText.collectAsState()
     val currentContext = LocalContext.current
 
@@ -58,10 +62,7 @@ fun InsertScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(15.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                //.imePadding()
-                //.windowInsetsPadding(WindowInsets.safeContent)
                 .padding(bottom = 15.dp)
-//            .animateContentSize()
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -97,20 +98,21 @@ fun InsertScreen(navController: NavController) {
                     .skipToLookaheadSize()
             )
 
-            TextButton("Insert", onClick = { insertViewModel.verifyInputCurrencies() }, modifier = Modifier.align(Alignment.CenterHorizontally))
+            TextButton("Insert", onClick = { insertViewModel.tryInsertInputCurrencies() }, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
-
 }
 
 @Composable
 fun InsertOptions(modifier: Modifier) {
-    val insertViewModel = koinViewModel<InsertViewModel>()
+    val insertViewModel = koinViewModel<DemoViewModel>(
+        viewModelStoreOwner = LocalContext.current as ComponentActivity
+    )
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         listOf(
-            TextButtonConfig("List A", onClick = { insertViewModel.loadJsonStringFromFile("currencyListA.json") }),
-            TextButtonConfig("List B", onClick = { insertViewModel.loadJsonStringFromFile("currencyListB.json") }),
-            TextButtonConfig("List A & B", onClick = { insertViewModel.loadJsonStringFromFile("combinedCurrencyList.json") }),
+            TextButtonConfig("List A", onClick = { insertViewModel.loadSampleData(CurrencySample.DATASET_A) }),
+            TextButtonConfig("List B", onClick = { insertViewModel.loadSampleData(CurrencySample.DATASET_B) }),
+            TextButtonConfig("List A & B", onClick = { insertViewModel.loadSampleData(CurrencySample.BOTH) }),
             TextButtonConfig("Beautify", onClick = { insertViewModel.beautifyString() }),
             TextButtonConfig("Clear", onClick = { insertViewModel.clearInput() }),
         ).map {

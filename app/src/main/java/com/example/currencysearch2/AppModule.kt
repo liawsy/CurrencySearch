@@ -5,7 +5,7 @@ import com.example.currencysearch2.dao.CurrencyDao
 import com.example.currencysearch2.dao.CurrencyDatabase
 import com.example.currencysearch2.data.CurrencyRepository
 import com.example.currencysearch2.data.CurrencyRepositoryImpl
-import com.example.currencysearch2.domain.InsertViewModel
+import com.example.currencysearch2.domain.DemoViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -20,7 +20,7 @@ val appModule = module {
         database.currencyDao()
     }
     single<CurrencyRepository> {
-        CurrencyRepositoryImpl(get())
+        CurrencyRepositoryImpl(androidContext(), get())
     }
-    viewModel { InsertViewModel(androidContext(), get()) }
+    viewModel { DemoViewModel(get()) }
 }

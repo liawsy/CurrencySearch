@@ -20,7 +20,6 @@ class SearchViewModel: ViewModel() {
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
 
-    // TODO: Debounce or delay? Empty list is showing before list is computed.
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 

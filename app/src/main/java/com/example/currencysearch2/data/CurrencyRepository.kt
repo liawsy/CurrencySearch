@@ -6,4 +6,10 @@ interface CurrencyRepository {
 
     suspend fun insertCurrencies(currencies: List<CurrencyInfo>)
 
+    suspend fun clearCurrencies()
+
+    suspend fun getRawCurrencyString(currencySample: CurrencySample): String
+
+    suspend fun getInitialData(): List<CurrencyInfo>
+
 }
