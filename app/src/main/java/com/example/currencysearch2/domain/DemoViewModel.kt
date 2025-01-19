@@ -35,15 +35,14 @@ class DemoViewModel(private val repository: CurrencyRepository): ViewModel() {
     private val _insertCompleteEvent = MutableSharedFlow<InsertCompleteEvent>()
     val insertCompleteEvent = _insertCompleteEvent.asSharedFlow()
 
-    /**
-     * TODO: Add loading state
-     */
-
+    private val _isTextInputError = MutableStateFlow(false)
+    val isTextInputError = _isTextInputError.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
+            _buttonEvent.emit(ButtonEvent.InsertingCurrencies)
             val currencies = repository.getInitialData()
-            _buttonEvent.emit(ButtonEvent.InsertCurrencies(currencies))
+            _buttonEvent.emit(ButtonEvent.InsertCurrenciesComplete(currencies))
         }
     }
 
@@ -62,6 +61,7 @@ class DemoViewModel(private val repository: CurrencyRepository): ViewModel() {
     }
 
     fun tryInsertInputCurrencies() {
+        _isTextInputError.value = false
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val currencies: List<CurrencyInfoDTO> = Json.decodeFromString(_insertedText.value)
@@ -72,26 +72,31 @@ class DemoViewModel(private val repository: CurrencyRepository): ViewModel() {
                 insertCurrencies(currencies.map { it.toCurrencyInfo() })
             } catch (e: SerializationException) {
                 _toastEvent.emit(ToastEvent("Please input a valid JSON!"))
+                _isTextInputError.value = true
             } catch (e: IllegalArgumentException) {
                 _toastEvent.emit(ToastEvent("Please input the correct data type!"))
+                _isTextInputError.value = true
             }
         }
 
     }
 
     private suspend fun insertCurrencies(currencies: List<CurrencyInfo>) {
+        _buttonEvent.emit(ButtonEvent.InsertingCurrencies)
         repository.insertCurrencies(currencies)
         _toastEvent.emit(ToastEvent("Insertion to database complete!"))
         _insertCompleteEvent.emit(InsertCompleteEvent)
         _insertedText.value = ""
-        _buttonEvent.emit(ButtonEvent.InsertCurrencies(currencies))
+        _buttonEvent.emit(ButtonEvent.InsertCurrenciesComplete(currencies))
     }
 
     fun clearInput() {
+        _isTextInputError.value = false
         _insertedText.value = ""
     }
 
     fun loadSampleData(dataset: CurrencySample) {
+        _isTextInputError.value = false
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _insertedText.value = repository.getRawCurrencyString(dataset)

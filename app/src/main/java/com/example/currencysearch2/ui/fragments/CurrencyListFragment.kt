@@ -16,9 +16,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,6 +49,7 @@ import com.example.currencysearch2.domain.SearchViewModel
 import com.example.currencysearch2.domain.model.CurrencyInfo
 import com.example.currencysearch2.domain.model.CurrencyType
 import com.example.currencysearch2.ui.components.ItemRow
+import com.example.currencysearch2.ui.components.ShimmerLoaderItem
 
 class CurrencyListFragment : Fragment() {
 
@@ -71,6 +71,10 @@ class CurrencyListFragment : Fragment() {
         searchViewModel.setCurrencies(currencies)
     }
 
+    fun setIsLoading(isLoading: Boolean) {
+        searchViewModel.setIsLoading(isLoading)
+    }
+
     private fun getTitleFromCurrencyTypes(currencyTypes: Set<CurrencyType>): String {
         val types = currencyTypes.toList()
         return when (types.size) {
@@ -84,6 +88,7 @@ class CurrencyListFragment : Fragment() {
         val currencyTypes by searchViewModel.currencyTypes.collectAsState()
         val currencies by searchViewModel.currencies.collectAsState()
         val isSearching by searchViewModel.isSearching.collectAsState()
+        val isLoading by searchViewModel.isLoading.collectAsState()
         Column(
             verticalArrangement = Arrangement.spacedBy(15.dp),
         ) {
@@ -91,8 +96,18 @@ class CurrencyListFragment : Fragment() {
                 getTitleFromCurrencyTypes(currencyTypes),
                 modifier = Modifier.fillMaxWidth()
             )
-            SearchBar(modifier = Modifier.fillMaxWidth())
-            CurrencyList(currencies, isSearching, modifier = Modifier.fillMaxWidth())
+
+            if (isLoading) {
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    items(10) {
+                        ShimmerLoaderItem(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp))
+                    }
+                }
+            } else {
+                SearchBar(modifier = Modifier.fillMaxWidth())
+                CurrencyList(currencies, isSearching, modifier = Modifier.fillMaxWidth())
+            }
+
         }
     }
 

@@ -23,6 +23,9 @@ class SearchViewModel: ViewModel() {
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
     private val _currencies = MutableStateFlow<List<CurrencyInfo>>(emptyList())
     val currencies =
         combine(_searchText, _currencyTypes, _currencies) { searchText, currencyTypes, currencies ->
@@ -33,6 +36,10 @@ class SearchViewModel: ViewModel() {
             SharingStarted.WhileSubscribed(),
             _currencies.value
         )
+
+    init {
+        setIsLoading(true)
+    }
 
     fun setCurrencies(currencies: List<CurrencyInfo>) {
         _currencies.value = currencies
@@ -50,6 +57,10 @@ class SearchViewModel: ViewModel() {
     fun cancelSearch() {
         _searchText.value = ""
         _isSearching.value = false
+    }
+
+    fun setIsLoading(isLoading: Boolean) {
+        _isLoading.value = isLoading
     }
 
     private fun List<CurrencyInfo>.filterByAcceptedTypes(currencyTypes: Set<CurrencyType>): List<CurrencyInfo> {

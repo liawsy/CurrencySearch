@@ -3,11 +3,17 @@ package com.example.currencysearch2
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,6 +25,7 @@ import com.example.currencysearch2.ui.theme.CurrencySearch2Theme
 class DemoActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         enableEdgeToEdge()
         setContent {
             CurrencySearch2Theme {
@@ -27,7 +34,11 @@ class DemoActivity : FragmentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = "demoCurrenciesScreen",
-                        modifier = Modifier.windowInsetsPadding(WindowInsets.safeContent)
+                        modifier = Modifier.windowInsetsPadding(WindowInsets.safeContent),
+                        enterTransition = { slideInHorizontally(initialOffsetX = { 1000 }) + fadeIn() },
+                        exitTransition = { slideOutHorizontally(targetOffsetX = { -1000 }) + fadeOut() },
+                        popEnterTransition = { slideInHorizontally(initialOffsetX = { -1000 }) + fadeIn() },
+                        popExitTransition = { slideOutHorizontally(targetOffsetX = { 1000 }) + fadeOut() }
                     ) {
                         composable("demoCurrenciesScreen") { DemoCurrenciesScreen(navController) }
                         composable("insertScreen") { InsertScreen(navController) }

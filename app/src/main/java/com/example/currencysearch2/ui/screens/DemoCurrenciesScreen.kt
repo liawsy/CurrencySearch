@@ -61,9 +61,13 @@ fun DemoCurrenciesScreen(navController: NavController) {
                         fragment.setDisplayCurrencies(currencyTypes)
                     }
 
-                    is ButtonEvent.InsertCurrencies -> fragment.updateCurrencies(
-                        buttonEvent.currencies
-                    )
+                    is ButtonEvent.InsertCurrenciesComplete -> {
+                        fragment.setIsLoading(false)
+                        fragment.updateCurrencies(
+                            buttonEvent.currencies
+                        )
+                    }
+                    is ButtonEvent.InsertingCurrencies -> fragment.setIsLoading(true)
                 }
             }
         }

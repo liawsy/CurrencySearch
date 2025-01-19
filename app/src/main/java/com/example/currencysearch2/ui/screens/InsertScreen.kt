@@ -2,17 +2,23 @@ package com.example.currencysearch2.ui.screens
 
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,12 +35,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.currencysearch2.data.CurrencySample
 import com.example.currencysearch2.domain.DemoViewModel
+import com.example.currencysearch2.ui.components.DismissibleTextBox
 import org.koin.androidx.compose.koinViewModel
-
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -42,7 +49,6 @@ fun InsertScreen(navController: NavController) {
     val insertViewModel = koinViewModel<DemoViewModel>(
         viewModelStoreOwner = LocalContext.current as ComponentActivity
     )
-    val insertedText by insertViewModel.insertedText.collectAsState()
     val currentContext = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -57,6 +63,11 @@ fun InsertScreen(navController: NavController) {
         }
     }
 
+    BackHandler {
+        insertViewModel.clearInput()
+        navController.popBackStack()
+    }
+
     SharedTransitionLayout {
         Column(
             verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -69,9 +80,15 @@ fun InsertScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 IconButton(
-                    onClick = { navController.popBackStack() }
+                    onClick = {
+                        insertViewModel.clearInput()
+                        navController.popBackStack()
+                    }
                 ) {
-                    Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back to main page")
+                    Icon(
+                        Icons.AutoMirrored.Default.ArrowBack,
+                        contentDescription = "Back to main page"
+                    )
                 }
                 Text(
                     text = "Insert currencies",
@@ -80,39 +97,88 @@ fun InsertScreen(navController: NavController) {
                 )
             }
 
-            InsertOptions(modifier = Modifier.fillMaxWidth())
-
-            TextField(
-                value = insertedText,
-                onValueChange = insertViewModel::onTextInserted,
-                placeholder = { Text("Insert currencies as JSONArray") },
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f) // This line is causing the weird flashing issue, maybe try shared element again?
-                    .skipToLookaheadSize()
+            DismissibleTextBox(
+                trailingIcon = Icons.Filled.EditNote,
+                text = "If a code field is present, the currency is assumed to be fiat. If a currency of the same ID exists in the database, it will be replaced with the latest entry.",
+                modifier = Modifier.fillMaxWidth()
             )
 
-            TextButton("Insert", onClick = { insertViewModel.tryInsertInputCurrencies() }, modifier = Modifier.align(Alignment.CenterHorizontally))
+            InsertOptions(modifier = Modifier.fillMaxWidth())
+
+            InsertTextField(modifier = Modifier.weight(1f).skipToLookaheadSize())
+
+            TextButton(
+                "Insert",
+                onClick = { insertViewModel.tryInsertInputCurrencies() },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
         }
+
     }
 }
 
 @Composable
-fun InsertOptions(modifier: Modifier) {
+fun InsertTextField(modifier: Modifier = Modifier) {
+    val insertViewModel = koinViewModel<DemoViewModel>(
+        viewModelStoreOwner = LocalContext.current as ComponentActivity
+    )
+    val insertedText by insertViewModel.insertedText.collectAsState()
+    val isError by insertViewModel.isTextInputError.collectAsState()
+    val errorMsg =
+        "Insert your currencies in a valid JSON Array format. Each currency must have an ID, name and symbol."
+
+    TextField(
+        value = insertedText,
+        onValueChange = insertViewModel::onTextInserted,
+        placeholder = { Text("Insert currencies as JSONArray") },
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        ),
+        supportingText = {
+            if (isError) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.Error,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size((MaterialTheme.typography.labelSmall.fontSize.value * 1.5).dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = errorMsg,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Justify,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+
+            }
+
+        },
+        shape = RoundedCornerShape(12.dp),
+        modifier = modifier
+            .fillMaxWidth()
+    )
+}
+
+@Composable
+fun InsertOptions(modifier: Modifier = Modifier) {
     val insertViewModel = koinViewModel<DemoViewModel>(
         viewModelStoreOwner = LocalContext.current as ComponentActivity
     )
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         listOf(
-            TextButtonConfig("List A", onClick = { insertViewModel.loadSampleData(CurrencySample.DATASET_A) }),
-            TextButtonConfig("List B", onClick = { insertViewModel.loadSampleData(CurrencySample.DATASET_B) }),
-            TextButtonConfig("List A & B", onClick = { insertViewModel.loadSampleData(CurrencySample.BOTH) }),
+            TextButtonConfig(
+                "List A",
+                onClick = { insertViewModel.loadSampleData(CurrencySample.DATASET_A) }),
+            TextButtonConfig(
+                "List B",
+                onClick = { insertViewModel.loadSampleData(CurrencySample.DATASET_B) }),
+            TextButtonConfig(
+                "List A & B",
+                onClick = { insertViewModel.loadSampleData(CurrencySample.BOTH) }),
             TextButtonConfig("Beautify", onClick = { insertViewModel.beautifyString() }),
             TextButtonConfig("Clear", onClick = { insertViewModel.clearInput() }),
         ).map {

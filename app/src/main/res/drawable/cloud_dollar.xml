@@ -1,12 +1,12 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
+    android:width="24dp"
+    android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-  <group android:scaleX="0.33"
-      android:scaleY="0.33"
-      android:translateX="8.04"
-      android:translateY="8.04">
+  <group
+    android:name="animationGroup"
+      android:pivotX="12"
+      android:pivotY="12">
     <path
         android:pathData="M13.5,18.004h-6.843c-2.572,-0.004 -4.657,-2.011 -4.657,-4.487c0,-2.475 2.085,-4.482 4.657,-4.482c0.393,-1.762 1.794,-3.2 3.675,-3.773c1.88,-0.572 3.956,-0.193 5.444,1c1.28,1.023 1.957,2.51 1.873,4.027"
         android:strokeLineJoin="round"
