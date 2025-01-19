@@ -46,8 +46,12 @@ class CurrencyRepositoryImpl(private val context: Context, private val currencyD
             }
             return currencies
         } else {
-            return currencyDao.getAll().map { it.toCurrencyInfo() }
+            return getAllCurrencies()
         }
+    }
+
+    override suspend fun getAllCurrencies(): List<CurrencyInfo> {
+        return currencyDao.getAll().map { it.toCurrencyInfo() }
     }
 
 }

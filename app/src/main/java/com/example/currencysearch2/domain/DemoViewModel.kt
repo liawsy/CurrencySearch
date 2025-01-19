@@ -87,7 +87,8 @@ class DemoViewModel(private val repository: CurrencyRepository): ViewModel() {
         _toastEvent.emit(ToastEvent("Insertion to database complete!"))
         _insertCompleteEvent.emit(InsertCompleteEvent)
         _insertedText.value = ""
-        _buttonEvent.emit(ButtonEvent.InsertCurrenciesComplete(currencies))
+        val allCurrencies = repository.getAllCurrencies()
+        _buttonEvent.emit(ButtonEvent.InsertCurrenciesComplete(allCurrencies))
     }
 
     fun clearInput() {

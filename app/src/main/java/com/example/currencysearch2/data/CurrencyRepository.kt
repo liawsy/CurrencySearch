@@ -12,4 +12,6 @@ interface CurrencyRepository {
 
     suspend fun getInitialData(): List<CurrencyInfo>
 
+    suspend fun getAllCurrencies(): List<CurrencyInfo>
+
 }
