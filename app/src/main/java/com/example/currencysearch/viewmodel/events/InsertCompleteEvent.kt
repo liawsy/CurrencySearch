@@ -1,0 +1,3 @@
+package com.example.currencysearch.viewmodel.events
+
+object InsertCompleteEvent

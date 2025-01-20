@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CurrencySearch2"
+rootProject.name = "CurrencySearch"
 include(":app")
  

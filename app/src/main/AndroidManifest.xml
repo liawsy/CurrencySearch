@@ -11,13 +11,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CurrencySearch2"
+        android:theme="@style/Theme.CurrencySearch"
         tools:targetApi="31">
         <activity
             android:name=".DemoActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.CurrencySearch2.Starting">
+            android:theme="@style/Theme.CurrencySearch.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

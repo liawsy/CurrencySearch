@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.currencysearch2"
+    namespace = "com.example.currencysearch"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.currencysearch2"
+        applicationId = "com.example.currencysearch"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

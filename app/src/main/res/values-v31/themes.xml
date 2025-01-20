@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.CurrencySearch2" parent="android:Theme.Material.Light.NoActionBar" />
-    <style name="Theme.CurrencySearch2.Starting" parent="Theme.SplashScreen">
+    <style name="Theme.CurrencySearch" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.CurrencySearch.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#0a0a0a</item>
-        <item name="postSplashScreenTheme">@style/Theme.CurrencySearch2</item>
+        <item name="postSplashScreenTheme">@style/Theme.CurrencySearch</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/animated_logo</item>
     </style>
 </resources>
