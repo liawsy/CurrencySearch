@@ -1,6 +1,7 @@
 package com.example.currencysearch2.dao
 
 import androidx.room.TypeConverter
+import com.example.currencysearch2.domain.model.CurrencyType
 
 class CurrencyConverter {
     @TypeConverter

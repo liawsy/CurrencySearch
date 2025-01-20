@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -103,9 +104,19 @@ fun InsertScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            InsertOptions(modifier = Modifier.fillMaxWidth())
+            InsertOptions(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .skipToLookaheadSize()
+                    .animateContentSize()
+            )
 
-            InsertTextField(modifier = Modifier.weight(1f).skipToLookaheadSize())
+            InsertTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .skipToLookaheadSize()
+                    .animateContentSize()
+            )
 
             TextButton(
                 "Insert",

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -33,8 +34,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,6 +53,7 @@ import com.example.currencysearch2.domain.model.CurrencyInfo
 import com.example.currencysearch2.domain.model.CurrencyType
 import com.example.currencysearch2.ui.components.ItemRow
 import com.example.currencysearch2.ui.components.ShimmerLoaderItem
+import kotlinx.coroutines.launch
 
 class CurrencyListFragment : Fragment() {
 
@@ -100,12 +104,14 @@ class CurrencyListFragment : Fragment() {
             if (isLoading) {
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     items(10) {
-                        ShimmerLoaderItem(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp))
+                        ShimmerLoaderItem(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp))
                     }
                 }
             } else {
                 SearchBar(modifier = Modifier.fillMaxWidth())
-                CurrencyList(currencies, isSearching, modifier = Modifier.fillMaxWidth())
+                CurrencyList(currencies, isSearching, currencyTypes, modifier = Modifier.fillMaxWidth())
             }
 
         }
@@ -177,7 +183,7 @@ class CurrencyListFragment : Fragment() {
 
     @OptIn(ExperimentalSharedTransitionApi::class)
     @Composable
-    fun CurrencyList(currencies: List<CurrencyInfo>, isSearching: Boolean, modifier: Modifier = Modifier) {
+    fun CurrencyList(currencies: List<CurrencyInfo>, isSearching: Boolean, currencyTypes: Set<CurrencyType>, modifier: Modifier = Modifier) {
         SharedTransitionLayout {
             AnimatedVisibility(
                 visible = currencies.isEmpty(),
@@ -191,6 +197,15 @@ class CurrencyListFragment : Fragment() {
                 enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
                 exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
             ) {
+                val coroutineScope = rememberCoroutineScope()
+                val listState = rememberLazyListState()
+
+                LaunchedEffect(currencyTypes) {
+                    coroutineScope.launch {
+                        listState.animateScrollToItem(0) // Scroll to the first item
+                    }
+                }
+
                 LazyColumn(
                     modifier = modifier
                         .background(
@@ -202,6 +217,7 @@ class CurrencyListFragment : Fragment() {
                             animationSpec = spring()
                         ),
                     contentPadding = PaddingValues(vertical = 5.dp),
+                    state = listState,
                 ) {
                     items(currencies, key = { it.id }) { currency ->
                         ItemRow(

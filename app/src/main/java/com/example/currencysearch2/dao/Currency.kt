@@ -3,6 +3,7 @@ package com.example.currencysearch2.dao
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.currencysearch2.domain.model.CurrencyInfo
+import com.example.currencysearch2.domain.model.CurrencyType
 
 @Entity
 data class Currency(
@@ -28,8 +29,4 @@ data class Currency(
             )
         }
     }
-}
-
-enum class CurrencyType {
-    CRYPTO, FIAT
 }

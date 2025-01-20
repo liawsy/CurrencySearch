@@ -1,7 +1,6 @@
 package com.example.currencysearch2.domain.model
 
 import com.example.currencysearch2.dao.Currency
-import com.example.currencysearch2.dao.CurrencyType
 
 sealed class CurrencyInfo(
     open val id: String,
